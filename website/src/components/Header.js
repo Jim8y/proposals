@@ -9,6 +9,7 @@ const navigation = [
   { name: 'NEPs', href: '/neps' },
   { name: 'Working NEPs', href: '/working-neps' },
   { name: 'About', href: '/about' },
+  { name: 'Contact', href: '/contact' },
 ];
 
 const Header = () => {

@@ -6,6 +6,7 @@
     "@auth0/auth0-react": "^2.2.0",
     "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.18",
+    "@octokit/rest": "^21.1.1",
     "axios": "^1.4.0",
     "date-fns": "^2.30.0",
     "faunadb": "^4.8.0",

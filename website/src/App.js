@@ -7,6 +7,7 @@ import NEPDetailPage from './pages/NEPDetailPage';
 import WorkingNEPsPage from './pages/WorkingNEPsPage';
 import AboutPage from './pages/AboutPage';
 import SearchPage from './pages/SearchPage';
+import ContactPage from './pages/ContactPage';
 import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path="/working-neps" element={<WorkingNEPsPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </Layout>
