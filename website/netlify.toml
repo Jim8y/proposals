@@ -1,5 +1,5 @@
 [build]
-  command = "node build-static.js"
+  command = "npm run build"
   publish = "build"
 
 [build.environment]
