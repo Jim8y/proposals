@@ -3,6 +3,10 @@
   publish = "build"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "16.14.0"
+  NPM_FLAGS = "--no-optional"
+
 [dev]
   command = "npm run start"
   port = 8888
