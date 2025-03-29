@@ -1,10 +1,11 @@
 [build]
-  command = "bash ./netlify-build.sh"
+  command = "CI= npm run build"
   publish = "build"
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "18.17.0"
+  NODE_VERSION = "16.14.0"
+  NPM_FLAGS = "--legacy-peer-deps"
 
 [dev]
   command = "npm run start"
