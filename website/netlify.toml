@@ -4,6 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  ESBUILD_BINARY_PATH = "/tmp/mock-esbuild"
+  SKIP_ESBUILD = "true"
+  SKIP_PREFLIGHT_CHECK = "true"
 
 [dev]
   command = "npm run start"

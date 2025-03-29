@@ -5,6 +5,9 @@
   "engines": {
     "node": ">=18"
   },
+  "resolutions": {
+    "@netlify/esbuild": "npm:esbuild@0.14.39"
+  },
   "dependencies": {
     "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^2.0.18",
