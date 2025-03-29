@@ -1,11 +1,10 @@
 [build]
   command = "CI= npm run build"
   publish = "build"
-  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "16.14.0"
-  NPM_FLAGS = "--legacy-peer-deps"
+  NPM_FLAGS = "--legacy-peer-deps --no-optional"
 
 [dev]
   command = "npm run start"
@@ -17,9 +16,4 @@
 [[redirects]]
   from = "/*"
   to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
   status = 200

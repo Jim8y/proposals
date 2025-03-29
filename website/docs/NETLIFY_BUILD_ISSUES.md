@@ -16,19 +16,31 @@ npm ERR! Error: Failed to install package "@netlify/esbuild-linux-64"
 
 This error occurs because of compatibility issues between the Node.js version, npm, and the esbuild package during the Netlify build process.
 
-### Solution Implemented
+## Solution: Static-Only Deployment Strategy
 
-1. **Specified Node.js Version**
+After multiple attempts to resolve the esbuild issues with configuration changes, we implemented a more robust solution by adopting a static-only deployment strategy.
+
+### Key Changes Implemented
+
+1. **Removed Netlify Functions Dependency**
+   - Eliminated the `functions` property from the netlify.toml build configuration
+   - Removed API redirects that pointed to Netlify Functions
+   - Implemented client-side alternatives for all server-side functionality
+
+2. **Client-Side Search Implementation**
+   - Created a new `clientSearch.js` service that directly queries the GitHub API
+   - Modified the SearchPage component to use the client-side search implementation
+   - Ensured search results maintain the same format and user experience
+
+3. **Direct GitHub API Integration**
+   - Updated the API service to communicate directly with the GitHub API
+   - Implemented client-side data fetching for NEPs, comments, and other content
+   - Maintained the same API interface to minimize changes to components
+
+4. **Optimized Build Environment**
    - Set Node.js to version 16.14.0 in the `netlify.toml` file
-   - Updated the `engines` field in `package.json` to match this version
-
-2. **Modified Build Command**
-   - Added `CI=` prefix to the build command to disable CI mode for React builds
-   - This prevents treating warnings as errors during the build process
-
-3. **Added NPM Flags**
-   - Set `NPM_FLAGS = "--legacy-peer-deps"` in the build environment
-   - This helps resolve dependency conflicts during installation
+   - Added `--no-optional` flag to NPM to skip problematic optional dependencies
+   - Used `CI=` prefix to prevent React from treating warnings as errors
 
 ### Implementation Details
 
@@ -37,36 +49,68 @@ This error occurs because of compatibility issues between the Node.js version, n
 [build]
   command = "CI= npm run build"
   publish = "build"
-  functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "16.14.0"
-  NPM_FLAGS = "--legacy-peer-deps"
+  NPM_FLAGS = "--legacy-peer-deps --no-optional"
+
+[dev]
+  command = "npm run start"
+  port = 8888
+  targetPort = 3000
+  publish = "build"
+  autoLaunch = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
 ```
 
-#### package.json Configuration
-```json
-"engines": {
-  "node": "16.x"
-}
-```
+#### Client-Side Search Implementation
+The new client-side search implementation in `clientSearch.js` directly fetches NEP files from GitHub and processes them locally:
 
-## Other Common Netlify Build Issues
+1. Fetches the list of NEP files from the GitHub repository
+2. Downloads and processes each NEP file to extract metadata
+3. Performs relevance scoring based on the search query
+4. Returns sorted results matching the query
 
-### React Build Treating Warnings as Errors
-In CI environments, Create React App treats warnings as errors by default, which can cause builds to fail.
+#### API Service Updates
+The API service now uses direct GitHub API calls instead of Netlify functions:
 
-**Solution**: Use `CI=` prefix before the build command to disable this behavior.
+1. Configures an Axios client for GitHub API requests
+2. Implements methods to fetch and process NEP data
+3. Handles comments through GitHub Issues API
+4. Maintains backward compatibility with existing components
 
-### Dependency Conflicts
-Newer packages may require Node.js versions that conflict with Netlify's build environment.
+## Benefits of Static-Only Approach
 
-**Solution**: Use the `--legacy-peer-deps` flag to ignore peer dependency conflicts.
+1. **Simplified Deployment**
+   - Fewer moving parts means fewer potential points of failure
+   - Eliminates complex server-side code that requires special build processes
 
-### Path Length Issues
-Windows has path length limitations that can cause issues when deploying from Windows machines.
+2. **Improved Reliability**
+   - Static sites have near-perfect uptime on Netlify
+   - No dependencies on function execution or runtime environments
 
-**Solution**: Use shorter folder names or deploy from a Linux/Mac environment.
+3. **Better Performance**
+   - Static assets can be cached at the edge
+   - No cold starts or function execution delays
+
+4. **Easier Debugging**
+   - Build process is simpler and more transparent
+   - Fewer layers of abstraction to troubleshoot
+
+## Potential Limitations
+
+1. **GitHub API Rate Limits**
+   - Unauthenticated requests to the GitHub API are limited to 60 requests per hour per IP
+   - High traffic could potentially exceed these limits
+   - Consider implementing a caching strategy for frequently accessed data
+
+2. **Client-Side Performance**
+   - Search operations now run in the browser, which may be slower for large datasets
+   - Consider implementing pagination or result limiting for better performance
 
 ## Testing the Build Locally
 
@@ -80,5 +124,5 @@ To test if your build will work on Netlify before deploying:
 
 1. [Netlify Build Documentation](https://docs.netlify.com/configure-builds/overview/)
 2. [Create React App Deployment](https://create-react-app.dev/docs/deployment/#netlify)
-3. [esbuild Documentation](https://esbuild.github.io/)
+3. [GitHub REST API Documentation](https://docs.github.com/en/rest)
 4. [Netlify Community Forum - esbuild issues](https://answers.netlify.com/t/esbuild-failed-to-install-correctly/39203)
