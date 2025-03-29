@@ -23,15 +23,21 @@ const HomePage = () => {
         // Get the 5 most recent NEPs
         setRecentNEPs(sortedNEPs.slice(0, 5));
         
-        // For featured NEPs, we'll select some important ones
-        // In a real app, this might be determined by a specific tag or field
-        // For now, we'll just pick some based on status and type
-        const featured = data.filter(nep => 
-          nep.status === 'Final' && 
-          (nep.type === 'Standards Track' || parseInt(nep.number) <= 5)
-        ).slice(0, 3);
+        // For featured NEPs, we'll select the key ones as specified (NEP 2, 6, 11, 17)
+        const keyNEPNumbers = ['2', '6', '11', '17'];
+        const featured = data.filter(nep => keyNEPNumbers.includes(nep.number));
         
-        setFeaturedNEPs(featured);
+        // If we couldn't find all the key NEPs, add some fallbacks
+        if (featured.length < keyNEPNumbers.length) {
+          const fallbackNEPs = data
+            .filter(nep => !keyNEPNumbers.includes(nep.number) && nep.status === 'Final')
+            .slice(0, keyNEPNumbers.length - featured.length);
+          
+          setFeaturedNEPs([...featured, ...fallbackNEPs]);
+        } else {
+          setFeaturedNEPs(featured);
+        }
+        
         setError(null);
       } catch (err) {
         console.error('Error fetching NEPs:', err);
@@ -45,36 +51,39 @@ const HomePage = () => {
     };
 
     const setMockData = () => {
-      // Mock featured NEPs
+      // Mock featured NEPs - using the key NEPs as requested
       const mockFeaturedNEPs = [
         {
-          number: '1',
-          title: 'NEP-1: NEP Purpose and Guidelines',
+          number: '2',
+          title: 'Wallet Provider',
           status: 'Final',
-          authors: ['Erik Zhang'],
-          type: 'Process',
-          created_at: '2017-07-15T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-1.mediawiki'
+          type: 'Standards Track',
+          created_at: '2018-03-15',
+          summary: 'This NEP describes standards for wallet providers to interact with dApps in the Neo ecosystem.'
         },
         {
-          number: '5',
-          title: 'NEP-5: Token Standard',
+          number: '6',
+          title: 'Tokens Permission',
           status: 'Final',
-          authors: ['Erik Zhang', 'Da Hongfei'],
           type: 'Standards Track',
-          category: 'Token',
-          created_at: '2017-11-15T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-5.mediawiki'
+          created_at: '2018-04-28',
+          summary: 'This NEP defines a token permission system for NEP-5 tokens to manage transfer permissions.'
+        },
+        {
+          number: '11',
+          title: 'Non-Fungible Token Standard',
+          status: 'Final',
+          type: 'Standards Track',
+          created_at: '2020-08-11',
+          summary: 'This NEP describes a standard for non-fungible tokens on the Neo blockchain.'
         },
         {
           number: '17',
-          title: 'NEP-17: Neo Token Standard',
+          title: 'NeoFS',
           status: 'Final',
-          authors: ['Erik Zhang', 'Yu Liu'],
           type: 'Standards Track',
-          category: 'Token',
-          created_at: '2020-07-15T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-17.mediawiki'
+          created_at: '2020-02-14',
+          summary: 'This NEP describes the NeoFS distributed decentralized object storage system.'
         }
       ];
       
@@ -82,53 +91,43 @@ const HomePage = () => {
       const mockRecentNEPs = [
         {
           number: '20',
-          title: 'NEP-20: Oracle Service',
-          status: 'Final',
-          authors: ['Yu Liu', 'John deVadoss'],
-          type: 'Standards Track',
-          category: 'Core',
-          created_at: '2021-05-10T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-20.mediawiki'
-        },
-        {
-          number: '21',
-          title: 'NEP-21: NeoFS Integration',
-          status: 'Final',
-          authors: ['Alexey Vanin', 'Stanislav Bogatyrev'],
-          type: 'Standards Track',
-          category: 'Storage',
-          created_at: '2021-04-15T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-21.mediawiki'
-        },
-        {
-          number: '22',
-          title: 'NEP-22: Generalized RPC Interface',
-          status: 'Final',
-          authors: ['Erik Zhang', 'Igor M. Coelho'],
-          type: 'Standards Track',
-          category: 'API',
-          created_at: '2021-03-20T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-22.mediawiki'
-        },
-        {
-          number: '23',
-          title: 'NEP-23: JSON-RPC Error Codes',
+          title: 'Oracle Implementation',
           status: 'Draft',
-          authors: ['Vitor Nazário Coelho', 'Igor M. Coelho'],
           type: 'Standards Track',
-          category: 'API',
-          created_at: '2021-02-15T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-23.mediawiki'
+          created_at: '2023-01-10',
+          summary: 'This NEP proposes an oracle implementation for Neo N3.'
         },
         {
-          number: '24',
-          title: 'NEP-24: NFT Standard',
+          number: '19',
+          title: 'LightDB Improvements',
           status: 'Draft',
-          authors: ['Yongquan Gu', 'Jinghui Liao'],
           type: 'Standards Track',
-          category: 'Token',
-          created_at: '2021-01-10T00:00:00Z',
-          html_url: 'https://github.com/neo-project/proposals/blob/master/nep-24.mediawiki'
+          created_at: '2022-12-05',
+          summary: 'This NEP proposes improvements to the LightDB storage system.'
+        },
+        {
+          number: '18',
+          title: 'Governance Mechanism',
+          status: 'Accepted',
+          type: 'Standards Track',
+          created_at: '2022-11-20',
+          summary: 'This NEP describes a governance mechanism for Neo N3.'
+        },
+        {
+          number: '17',
+          title: 'NeoFS',
+          status: 'Final',
+          type: 'Standards Track',
+          created_at: '2020-02-14',
+          summary: 'This NEP describes the NeoFS distributed decentralized object storage system.'
+        },
+        {
+          number: '6',
+          title: 'Tokens Permission',
+          status: 'Final',
+          type: 'Standards Track',
+          created_at: '2018-04-28',
+          summary: 'This NEP defines a token permission system for NEP-5 tokens to manage transfer permissions.'
         }
       ];
       
@@ -139,149 +138,178 @@ const HomePage = () => {
     fetchNEPs();
   }, []);
 
-  const renderNEPCard = (nep) => (
-    <Link 
-      to={`/nep/${nep.number}`} 
-      key={nep.number}
-      className="block p-6 bg-white rounded-lg border border-gray-200 shadow-md hover:bg-gray-50"
-    >
-      <div className="flex justify-between items-start">
-        <div>
-          <h3 className="text-xl font-bold tracking-tight text-gray-900">
-            NEP-{nep.number}: {nep.title}
-          </h3>
-          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-2 ${
-            nep.status === 'Final' ? 'bg-green-100 text-green-800' : 
-            nep.status === 'Draft' ? 'bg-yellow-100 text-yellow-800' : 
-            'bg-blue-100 text-blue-800'
-          }`}>
-            {nep.status}
-          </span>
-        </div>
-        <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-        </svg>
-      </div>
-      <p className="mt-3 text-sm text-gray-500">
-        Created: {new Date(nep.created_at).toLocaleDateString()}
-      </p>
-    </Link>
-  );
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-red-50 border-l-4 border-red-400 p-4 my-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <p className="text-sm text-red-700">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
-      {/* Hero Section */}
-      <div className="bg-white">
-        <div className="max-w-7xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
+      <section className="bg-white py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-6xl">
-              <span className="block">Neo Enhancement</span>
-              <span className="block text-green-600">Proposals (NEPs)</span>
+            <h1 className="text-4xl font-extrabold text-gray-900 sm:text-5xl sm:tracking-tight lg:text-6xl">
+              Neo N3 Proposals
             </h1>
-            <p className="mt-3 max-w-md mx-auto text-base text-gray-500 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+            <p className="mt-5 max-w-xl mx-auto text-xl text-gray-500">
               NEPs describe standards for the Neo platform, including core protocol specifications, client APIs, and contract standards.
             </p>
-            <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-              <div className="rounded-md shadow">
-                <Link to="/neps" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10">
-                  Browse All NEPs
-                </Link>
-              </div>
-              <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                <Link to="/working-neps" className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10">
-                  View Working NEPs
-                </Link>
-              </div>
-            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Featured NEPs */}
-      <div className="bg-gray-50 py-12">
+      <section className="py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:text-center">
-            <h2 className="text-base text-green-600 font-semibold tracking-wide uppercase">Featured</h2>
-            <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-              Key Neo Enhancement Proposals
-            </p>
-            <p className="mt-4 max-w-2xl text-xl text-gray-500 lg:mx-auto">
-              These NEPs form the foundation of the Neo ecosystem and are essential for developers.
-            </p>
-          </div>
-
-          <div className="mt-10">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredNEPs.map(nep => renderNEPCard(nep))}
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-8">
+            Key Neo Enhancement Proposals
+          </h2>
+          
+          {loading ? (
+            <div className="text-center py-10">
+              <div className="spinner"></div>
+              <p className="mt-4 text-gray-600">Loading key NEPs...</p>
             </div>
-          </div>
+          ) : error ? (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {featuredNEPs.map(nep => (
+                <div 
+                  key={nep.number} 
+                  className="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="px-4 py-5 sm:p-6">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 bg-neo-green-100 rounded-md p-3">
+                        <span className="text-neo-green-600 text-xl font-bold">NEP-{nep.number}</span>
+                      </div>
+                      <div className="ml-5 w-0 flex-1">
+                        <dl>
+                          <dt className="text-sm font-medium text-gray-500 truncate">
+                            {nep.type}
+                          </dt>
+                          <dd>
+                            <div className="text-lg font-medium text-gray-900 truncate">
+                              {nep.title}
+                            </div>
+                          </dd>
+                        </dl>
+                      </div>
+                    </div>
+                    <div className="mt-4">
+                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                        nep.status === 'Final' ? 'bg-green-100 text-green-800' : 
+                        nep.status === 'Accepted' ? 'bg-blue-100 text-blue-800' : 
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {nep.status}
+                      </span>
+                    </div>
+                    <div className="mt-4 text-sm text-gray-500">
+                      {nep.summary || 'No summary available.'}
+                    </div>
+                    <div className="mt-4">
+                      <Link 
+                        to={`/nep/${nep.number}`}
+                        className="text-neo-green-600 hover:text-neo-green-800 font-medium"
+                      >
+                        View details →
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+      </section>
 
-      {/* Recent NEPs */}
-      <div className="bg-white py-12">
+      <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-extrabold text-gray-900">Recent NEPs</h2>
-          <div className="mt-6 space-y-4">
-            {recentNEPs.map(nep => renderNEPCard(nep))}
-          </div>
-          <div className="mt-8 text-center">
-            <Link to="/neps" className="inline-flex items-center px-4 py-2 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700">
+          <h2 className="text-3xl font-extrabold text-gray-900 mb-8">
+            Recent NEPs
+          </h2>
+          
+          {loading ? (
+            <div className="text-center py-10">
+              <div className="spinner"></div>
+              <p className="mt-4 text-gray-600">Loading recent NEPs...</p>
+            </div>
+          ) : error ? (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-hidden bg-white shadow sm:rounded-md">
+              <ul className="divide-y divide-gray-200">
+                {recentNEPs.map(nep => (
+                  <li key={nep.number}>
+                    <Link to={`/nep/${nep.number}`} className="block hover:bg-gray-50">
+                      <div className="px-4 py-4 sm:px-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 bg-neo-green-100 rounded-md p-2">
+                              <span className="text-neo-green-600 font-bold">NEP-{nep.number}</span>
+                            </div>
+                            <p className="ml-4 text-sm font-medium text-gray-900 truncate">
+                              {nep.title}
+                            </p>
+                          </div>
+                          <div className="ml-2 flex-shrink-0 flex">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                              nep.status === 'Final' ? 'bg-green-100 text-green-800' : 
+                              nep.status === 'Accepted' ? 'bg-blue-100 text-blue-800' : 
+                              'bg-yellow-100 text-yellow-800'
+                            }`}>
+                              {nep.status}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="mt-2 sm:flex sm:justify-between">
+                          <div className="sm:flex">
+                            <p className="flex items-center text-sm text-gray-500">
+                              {nep.type}
+                            </p>
+                          </div>
+                          <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                            <p>
+                              Created on {new Date(nep.created_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          <div className="mt-6 text-center">
+            <Link 
+              to="/neps" 
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-neo-green-600 hover:bg-neo-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neo-green-500"
+            >
               View All NEPs
-              <svg className="ml-2 -mr-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
             </Link>
           </div>
         </div>
-      </div>
-
-      {/* Get Involved Section */}
-      <div className="bg-green-700">
-        <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8 lg:flex lg:items-center lg:justify-between">
-          <h2 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            <span className="block">Want to contribute?</span>
-            <span className="block text-green-200">Get involved with Neo NEPs today.</span>
-          </h2>
-          <div className="mt-8 flex lg:mt-0 lg:flex-shrink-0">
-            <div className="inline-flex rounded-md shadow">
-              <a href="https://github.com/neo-project/proposals" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-green-600 bg-white hover:bg-green-50">
-                GitHub Repository
-              </a>
-            </div>
-            <div className="ml-3 inline-flex rounded-md shadow">
-              <a href="https://docs.neo.org/docs/en-us/index.html" className="inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-500">
-                Learn More
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+      </section>
     </div>
   );
 };

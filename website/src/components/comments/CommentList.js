@@ -2,11 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { commentApi } from '../../services/api';
 import CommentItem from './CommentItem';
 import CommentForm from './CommentForm';
-import { useAuth0 } from '@auth0/auth0-react';
 
 /**
  * CommentList component displays all comments for a specific NEP
- * and provides a form for adding new comments if the user is authenticated.
+ * and provides a form for adding new comments without requiring authentication.
  * 
  * @param {Object} props
  * @param {string} props.nepNumber - The NEP number to display comments for
@@ -15,7 +14,6 @@ const CommentList = ({ nepNumber }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { isAuthenticated, loginWithRedirect, user } = useAuth0();
 
   // Fetch comments when the component mounts or the NEP number changes
   useEffect(() => {
@@ -37,23 +35,22 @@ const CommentList = ({ nepNumber }) => {
   }, [nepNumber]);
 
   // Handle adding a new comment
-  const handleAddComment = async (commentContent) => {
+  const handleAddComment = async (commentContent, authorName) => {
     try {
       const newComment = await commentApi.addComment({
         nepNumber,
         content: commentContent,
         author: {
-          name: user.name || user.nickname || 'Anonymous',
-          picture: user.picture
+          name: authorName || 'Anonymous',
+          picture: null
         }
       });
       
       // Add the new comment to the list
-      setComments([...comments, newComment]);
-      return true;
+      setComments(prevComments => [...prevComments, newComment]);
     } catch (err) {
       console.error('Error adding comment:', err);
-      return false;
+      alert('Failed to add comment. Please try again later.');
     }
   };
 
@@ -91,23 +88,8 @@ const CommentList = ({ nepNumber }) => {
     <div className="mt-8">
       <h2 className="text-2xl font-bold mb-4">Comments ({comments.length})</h2>
       
-      {/* Comment form for authenticated users */}
-      {isAuthenticated ? (
-        <CommentForm onSubmit={handleAddComment} />
-      ) : (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <p className="text-gray-700">
-            Please{' '}
-            <button
-              onClick={() => loginWithRedirect()}
-              className="text-green-600 hover:text-green-800 font-medium"
-            >
-              sign in
-            </button>{' '}
-            to leave a comment.
-          </p>
-        </div>
-      )}
+      {/* Comment form for adding new comments */}
+      <CommentForm onAddComment={handleAddComment} />
       
       {/* List of comments */}
       <div className="space-y-4">

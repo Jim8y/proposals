@@ -1,17 +1,16 @@
 import React, { useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 
 /**
- * CommentForm component provides a form for users to add new comments.
+ * CommentForm component provides a form for users to add new comments without requiring login.
  * 
  * @param {Object} props
- * @param {Function} props.onSubmit - Callback function to handle form submission
+ * @param {Function} props.onAddComment - Callback function to handle form submission
  */
-const CommentForm = ({ onSubmit }) => {
+const CommentForm = ({ onAddComment }) => {
   const [content, setContent] = useState('');
+  const [authorName, setAuthorName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
-  const { user } = useAuth0();
 
   // Handle form submission
   const handleSubmit = async (e) => {
@@ -27,15 +26,12 @@ const CommentForm = ({ onSubmit }) => {
       setIsSubmitting(true);
       setError(null);
       
-      // Call the onSubmit callback with the comment content
-      const success = await onSubmit(content);
+      // Call the onAddComment callback with the comment content and author name
+      await onAddComment(content, authorName);
       
-      if (success) {
-        // Reset form on successful submission
-        setContent('');
-      } else {
-        setError('Failed to add comment. Please try again.');
-      }
+      // Reset form on successful submission
+      setContent('');
+      setError(null);
     } catch (err) {
       console.error('Error submitting comment:', err);
       setError('An unexpected error occurred. Please try again.');
@@ -45,52 +41,60 @@ const CommentForm = ({ onSubmit }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mb-6">
-      <div className="flex items-start space-x-3">
-        {/* User avatar */}
-        <div className="flex-shrink-0">
-          <img
-            src={user?.picture || 'https://via.placeholder.com/40'}
-            alt={`${user?.name || 'User'}'s avatar`}
-            className="h-10 w-10 rounded-full"
-            onError={(e) => {
-              e.target.src = 'https://via.placeholder.com/40?text=User';
-            }}
-          />
+    <form onSubmit={handleSubmit} className="mb-6 bg-white p-4 rounded-lg border border-gray-200">
+      <h3 className="text-lg font-medium mb-3">Add a Comment</h3>
+      
+      {/* Author name input */}
+      <div className="mb-3">
+        <label htmlFor="author-name" className="block text-sm font-medium text-gray-700 mb-1">
+          Your Name (optional)
+        </label>
+        <input
+          type="text"
+          id="author-name"
+          value={authorName}
+          onChange={(e) => setAuthorName(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+          placeholder="Enter your name"
+        />
+      </div>
+      
+      {/* Comment content textarea */}
+      <div className="mb-3">
+        <label htmlFor="comment-content" className="block text-sm font-medium text-gray-700 mb-1">
+          Comment
+        </label>
+        <textarea
+          id="comment-content"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={4}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+          placeholder="Write your comment here..."
+          required
+        />
+      </div>
+      
+      {/* Error message */}
+      {error && (
+        <div className="mb-3 text-red-500 text-sm">
+          {error}
         </div>
-        
-        {/* Comment input */}
-        <div className="flex-1 min-w-0">
-          <div className="relative">
-            <textarea
-              id="comment"
-              name="comment"
-              rows="3"
-              className="block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-              placeholder="Add a comment..."
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              disabled={isSubmitting}
-              required
-            />
-          </div>
-          
-          {/* Error message */}
-          {error && (
-            <p className="mt-2 text-sm text-red-600">{error}</p>
-          )}
-          
-          {/* Submit button */}
-          <div className="mt-3 flex justify-end">
-            <button
-              type="submit"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Posting...' : 'Post Comment'}
-            </button>
-          </div>
-        </div>
+      )}
+      
+      {/* Submit button */}
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`px-4 py-2 rounded-md text-white font-medium ${
+            isSubmitting
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
+          }`}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit Comment'}
+        </button>
       </div>
     </form>
   );
