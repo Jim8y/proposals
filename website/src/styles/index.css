@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  h1 {
+    @apply text-3xl font-bold text-gray-900 sm:text-4xl;
+  }
+  
+  h2 {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  h3 {
+    @apply text-xl font-bold text-gray-900;
+  }
+  
+  a {
+    @apply text-neo-green-600 hover:text-neo-green-800;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-neo-green-600 hover:bg-neo-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neo-green-500;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neo-green-500;
+  }
+  
+  .card {
+    @apply bg-white overflow-hidden shadow rounded-lg;
+  }
+  
+  .card-header {
+    @apply px-4 py-5 sm:px-6 bg-gray-50 border-b border-gray-200;
+  }
+  
+  .card-body {
+    @apply px-4 py-5 sm:p-6;
+  }
+  
+  .card-footer {
+    @apply px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-200;
+  }
+  
+  .status-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .status-badge-active {
+    @apply bg-green-100 text-green-800;
+  }
+  
+  .status-badge-final {
+    @apply bg-blue-100 text-blue-800;
+  }
+  
+  .status-badge-accepted {
+    @apply bg-purple-100 text-purple-800;
+  }
+  
+  .status-badge-draft {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+  
+  .status-badge-rejected {
+    @apply bg-red-100 text-red-800;
+  }
+  
+  .waiting-time-indicator {
+    @apply h-2 rounded-full overflow-hidden bg-gray-200;
+  }
+  
+  .waiting-time-bar {
+    @apply h-full bg-neo-green-600;
+  }
+  
+  .waiting-time-bar-long {
+    @apply bg-yellow-500;
+  }
+  
+  .waiting-time-bar-very-long {
+    @apply bg-red-500;
+  }
+}
