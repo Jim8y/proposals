@@ -1,12 +1,18 @@
 [build]
+  base = "website/"
+  publish = "build/"
+  functions = "netlify/functions/"
   command = "bash netlify-build.sh"
-  publish = "build"
 
 [build.environment]
-  NODE_VERSION = "18"
   ESBUILD_BINARY_PATH = "/tmp/mock-esbuild"
-  SKIP_ESBUILD = "true"
   SKIP_PREFLIGHT_CHECK = "true"
+  SKIP_ESBUILD = "true"
+  NODE_OPTIONS = "--max-old-space-size=4096"
+  NPM_FLAGS = "--no-audit --no-fund"
+  NODE_VERSION = "18.20.8"
+  NETLIFY_USE_YARN = "false"
+  YARN_FLAGS = "--ignore-scripts"
 
 [dev]
   command = "npm run start"
