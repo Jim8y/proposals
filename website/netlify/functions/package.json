@@ -1,0 +1,12 @@
+{
+  "name": "neo-n3-proposals-functions",
+  "version": "1.0.0",
+  "description": "Netlify functions for Neo N3 Proposals website",
+  "engines": {
+    "node": "18.x"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.1.1",
+    "axios": "^1.4.0"
+  }
+}
